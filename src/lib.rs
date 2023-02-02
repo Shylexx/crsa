@@ -25,19 +25,40 @@ fn setup(gfx: &mut Graphics) -> Editor {
         .create_font(include_bytes!("../assets/Kenney Blocks.ttf"))
         .expect("Couldn't Load font!");
 
+    let font2 = gfx
+        .create_font(include_bytes!("../assets/Kenney Future.ttf"))
+        .expect("Couldn't Load font!");
+
+    let font3 = gfx
+        .create_font(include_bytes!("../assets/Monocraft.ttf"))
+        .expect("Couldn't Load font!");
+
+    let font4 = gfx
+        .create_font(include_bytes!("../assets/FiraCode-Regular.ttf"))
+        .expect("Couldn't Load font!");
+
     Editor {
         font,
+        font2,
+        font3,
+        font4,
         doc: Some(Document::empty()),
         state: EditorState::Splash,
         cursor_pos: Position { x: 0, y: 0 },
+        quit: false,
     }
 }
 
 fn frame(app: &mut App, editor: &mut Editor) {
     match editor.state {
         EditorState::Splash => {
-            if app.timer.time_since_init() > 5.0 {
+            if app.timer.time_since_init() > 1.0 {
                 editor.state = EditorState::Edit;
+            }
+        }
+        EditorState::Edit => {
+            if editor.quit {
+                app.exit();
             }
         }
         _ => {}
@@ -46,7 +67,10 @@ fn frame(app: &mut App, editor: &mut Editor) {
 
 fn event(editor: &mut Editor, evt: Event) {
     match evt {
-        Event::ReceivedCharacter(c) if c != '\u{7f}' => {
+        Event::KeyDown { key } => {
+            editor.process_key(key);
+        }
+        Event::ReceivedCharacter(c) if c != '\u{7f}' && c != '\u{8}' => {
             editor.process_char(c);
         }
         _ => {}
@@ -55,7 +79,7 @@ fn event(editor: &mut Editor, evt: Event) {
 
 fn draw(gfx: &mut Graphics, editor: &mut Editor) {
     let mut text = gfx.create_text();
-    text.clear_color(Color::BLACK);
+    let mut draw = gfx.create_draw();
 
     match editor.state {
         EditorState::Splash => {
@@ -63,6 +87,7 @@ fn draw(gfx: &mut Graphics, editor: &mut Editor) {
                 .font(&editor.font)
                 .position(400.0, 30.0)
                 .h_align_center()
+                .v_align_middle()
                 .color(Color::GREEN)
                 .size(30.0);
 
@@ -70,21 +95,36 @@ fn draw(gfx: &mut Graphics, editor: &mut Editor) {
         }
         EditorState::Edit => {
             text.add("")
-                .font(&editor.font)
-                .position(gfx.size().0 as f32 / 2.0, gfx.size().1 as f32 / 2.0)
-                .h_align_center()
-                .v_align_middle()
+                .font(&editor.font4)
+                .position(30.0, 30.0)
                 .color(Color::AQUA)
-                .size(60.0);
+                .size(50.0);
 
-            for line in &editor.doc.as_mut().unwrap().lines {
-                text.chain(&line.content).color(Color::AQUA).size(60.0);
+            // Render Cursor
+            draw.rect(
+                (
+                    30.0 + (25.0 * *&editor.cursor_pos.x as f32),
+                    (editor.cursor_pos.y as f32 * 50.0),
+                ),
+                (25.0, 50.0),
+            );
+
+            // Render Document content
+            for (index, line) in editor.doc.as_mut().unwrap().lines.iter().enumerate() {
+                // Render Text line
+                text.add(&line.content)
+                    .font(&editor.font4)
+                    .position(30.0, index as f32 * 50.0)
+                    .color(Color::AQUA)
+                    .size(50.0);
                 text.chain("\n");
             }
         }
         _ => {}
     }
+    draw.clear(Color::BLACK);
 
+    gfx.render(&draw);
     gfx.render(&text);
 }
 

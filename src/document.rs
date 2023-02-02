@@ -1,3 +1,5 @@
+use notan::prelude::KeyCode;
+
 use crate::editor::Position;
 use std::{fmt::Debug, fs};
 
@@ -39,6 +41,14 @@ impl Line {
         self.content.insert(at, c);
         self.len += 1;
     }
+    pub fn append(&mut self, new: &Self) {
+        self.content = format!("{}{}", self.content, new.content);
+        self.len += new.len;
+    }
+    pub fn delete(&mut self, at: usize) {
+        self.content.remove(at);
+        self.len -= 1;
+    }
 }
 
 impl Document {
@@ -67,14 +77,26 @@ impl Document {
     }
     fn insert_newline(&mut self, at: &Position) {
         if at.x >= 10 {}
-        self.lines.insert(at.y, Line::from("test"))
+        self.lines.insert(at.y + 1, Line::from(""))
     }
     pub fn insert(&mut self, at: &Position, c: char) {
-        if c == '\n' {
+        if c == '\n' || c == '\r' {
             self.insert_newline(at);
             return;
         }
-        self.lines[at.y].insert(at.x, c);
-        eprintln!("{:?}", &self.lines[0].content);
+        self.lines[at.y].insert(at.x + 1, c);
+    }
+    pub fn delete(&mut self, at: &Position) -> (usize, KeyCode) {
+        eprintln!("Deleting char at: {:?}", at);
+        if at.x == 0 && at.y != 0 {
+            let append = self.lines.remove(at.y);
+            let new_cursor = self.lines[at.y - 1].len();
+            self.lines[at.y - 1].append(&append);
+            return (new_cursor, KeyCode::Up);
+        } else if self.lines[at.y].len() > 0 {
+            self.lines[at.y].delete(at.x);
+            return (0, KeyCode::Left);
+        }
+        (0, KeyCode::Escape)
     }
 }
