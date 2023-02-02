@@ -18,7 +18,30 @@ pub enum EditorState {
 }
 
 impl Editor {
-    pub fn move_cursor(&mut self, direction: Dir) {}
+    pub fn move_cursor(&mut self, direction: Dir) {
+        match direction {
+            Dir::Right => {
+                if self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len() > self.cursor_pos.x {
+                    self.cursor_pos.x += 1;
+                }
+            }
+            Dir::Left => {
+                if self.cursor_pos.x > 0 {
+                    self.cursor_pos.x -= 1;
+                }
+            }
+            Dir::Up => {
+                if self.cursor_pos.y > 0 {
+                    self.cursor_pos.y -= 1;
+                }
+            }
+            Dir::Down => {
+                if self.cursor_pos.y > self.doc.as_mut().unwrap().lines.len() {
+                    self.cursor_pos.y += 1;
+                }
+            }
+        }
+    }
     pub fn process_char(&mut self, character: char) {
         match self.state {
             EditorState::Splash => {}
@@ -34,7 +57,7 @@ impl Editor {
     }
 }
 
-enum Dir {
+pub enum Dir {
     Left,
     Right,
     Up,
