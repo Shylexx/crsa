@@ -45,6 +45,14 @@ impl Line {
         self.content = format!("{}{}", self.content, new.content);
         self.len += new.len;
     }
+    pub fn split(&mut self, at: usize) -> Self {
+        let split: String = self.content.chars().skip(at).collect();
+        let split_len: usize = split.len();
+        let new_content: String = self.content.chars().take(at).collect();
+        self.len = new_content.len();
+        self.content = new_content;
+        Self { content: split, len: split_len }
+    }
     pub fn delete(&mut self, at: usize) {
         self.content.remove(at);
         self.len -= 1;
@@ -76,8 +84,12 @@ impl Document {
         })
     }
     fn insert_newline(&mut self, at: &Position) {
-        if at.x >= 10 {}
-        self.lines.insert(at.y + 1, Line::from(""))
+        if at.y == self.lines.len() {
+            self.lines.insert(at.y + 1, Line::from(""));
+            return;
+        }
+        let new_row = self.lines[at.y].split(at.x);
+        self.lines.insert(at.y + 1, new_row);
     }
     pub fn insert(&mut self, at: &Position, c: char) {
         if c == '\n' || c == '\r' {
