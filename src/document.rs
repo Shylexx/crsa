@@ -111,4 +111,13 @@ impl Document {
         }
         (0, KeyCode::Escape)
     }
+    pub fn as_str(&mut self) -> String {
+        let mut s = String::new();
+        for line in &mut self.lines {
+            s.push_str(&line.content);
+            s.push_str("\n");
+        }
+        s.truncate(s.trim().len());
+        s
+    }
 }

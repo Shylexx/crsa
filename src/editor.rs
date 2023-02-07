@@ -1,7 +1,7 @@
 use notan::draw::Draw;
 use notan::draw::DrawShapes;
+use notan::draw::Font;
 use notan::prelude::*;
-use notan::text::*;
 
 use crate::document::Document;
 
@@ -30,7 +30,6 @@ impl Editor {
                 if self.cursor_pos.x
                     < self.doc.as_mut().unwrap().lines[self.cursor_pos.y]
                         .len()
-                        .saturating_sub(1)
                 {
                     self.cursor_pos.x += 1;
                 }
@@ -44,7 +43,7 @@ impl Editor {
                 if self.cursor_pos.y > 0 {
                     self.cursor_pos.y -= 1;
                     if self.cursor_pos.x > self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len() {
-                        self.cursor_pos.x = self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len() - 1;
+                        self.cursor_pos.x = self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len().saturating_sub(1);
                     }
                 }
             }
@@ -52,7 +51,7 @@ impl Editor {
                 if self.cursor_pos.y < self.doc.as_mut().unwrap().lines.len().saturating_sub(1) {
                     self.cursor_pos.y += 1;
                     if self.cursor_pos.x > self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len() {
-                        self.cursor_pos.x = self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len() - 1;
+                        self.cursor_pos.x = self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len().saturating_sub(1);
                     }
                 }
             }

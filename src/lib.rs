@@ -3,7 +3,6 @@ use crate::editor::{Editor, EditorState};
 use editor::Position;
 use notan::draw::*;
 use notan::prelude::*;
-use notan::text::*;
 
 mod document;
 mod editor;
@@ -11,7 +10,6 @@ mod editor;
 #[notan_main]
 pub fn run() -> Result<(), String> {
     notan::init_with(setup)
-        .add_config(TextConfig)
         .add_config(DrawConfig)
         .add_config(window_config())
         .event(event)
@@ -78,28 +76,20 @@ fn event(editor: &mut Editor, evt: Event) {
 }
 
 fn draw(gfx: &mut Graphics, editor: &mut Editor) {
-    let mut text = gfx.create_text();
     let mut draw = gfx.create_draw();
 
     match editor.state {
         EditorState::Splash => {
-            text.add("Crsa Editor ")
-                .font(&editor.font)
+            draw.text(&editor.font, "Crsa Editor ")
                 .position(400.0, 30.0)
                 .h_align_center()
                 .v_align_middle()
                 .color(Color::GREEN)
                 .size(30.0);
 
-            text.chain("Version: 0.1.0").size(20.0).color(Color::ORANGE);
+            draw.text(&editor.font, "Version: 0.1.0").position(500.0, 30.0).size(20.0).color(Color::ORANGE);
         }
         EditorState::Edit => {
-            text.add("")
-                .font(&editor.font4)
-                .position(30.0, 30.0)
-                .color(Color::AQUA)
-                .size(50.0);
-
             // Render Cursor
             draw.rect(
                 (
@@ -110,22 +100,16 @@ fn draw(gfx: &mut Graphics, editor: &mut Editor) {
             );
 
             // Render Document content
-            for (index, line) in editor.doc.as_mut().unwrap().lines.iter().enumerate() {
-                // Render Text line
-                text.add(&line.content)
-                    .font(&editor.font4)
-                    .position(30.0, index as f32 * 50.0)
-                    .color(Color::AQUA)
-                    .size(50.0);
-                text.chain("\n");
-            }
+            draw.text(&editor.font4, &editor.doc.as_mut().expect("No document to draw!").as_str())
+                .position(30.0, 0.0)
+                .color(Color::AQUA)
+                .size(50.0);
         }
         _ => {}
     }
     draw.clear(Color::BLACK);
 
     gfx.render(&draw);
-    gfx.render(&text);
 }
 
 fn window_config() -> WindowConfig {
