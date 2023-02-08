@@ -51,7 +51,10 @@ impl Line {
         let new_content: String = self.content.chars().take(at).collect();
         self.len = new_content.len();
         self.content = new_content;
-        Self { content: split, len: split_len }
+        Self {
+            content: split,
+            len: split_len,
+        }
     }
     pub fn delete(&mut self, at: usize) {
         self.content.remove(at);
@@ -106,7 +109,7 @@ impl Document {
             self.lines[at.y - 1].append(&append);
             return (new_cursor, KeyCode::Up);
         } else if self.lines[at.y].len() > 0 {
-            self.lines[at.y].delete(at.x);
+            self.lines[at.y].delete(at.x - 1);
             return (0, KeyCode::Left);
         }
         (0, KeyCode::Escape)

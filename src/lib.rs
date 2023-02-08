@@ -87,7 +87,10 @@ fn draw(gfx: &mut Graphics, editor: &mut Editor) {
                 .color(Color::GREEN)
                 .size(30.0);
 
-            draw.text(&editor.font, "Version: 0.1.0").position(500.0, 30.0).size(20.0).color(Color::ORANGE);
+            draw.text(&editor.font, "Version: 0.1.0")
+                .position(500.0, 30.0)
+                .size(20.0)
+                .color(Color::ORANGE);
         }
         EditorState::Edit => {
             // Render Cursor
@@ -100,10 +103,13 @@ fn draw(gfx: &mut Graphics, editor: &mut Editor) {
             );
 
             // Render Document content
-            draw.text(&editor.font4, &editor.doc.as_mut().expect("No document to draw!").as_str())
-                .position(30.0, 0.0)
-                .color(Color::AQUA)
-                .size(50.0);
+            draw.text(
+                &editor.font4,
+                &editor.doc.as_mut().expect("No document to draw!").as_str(),
+            )
+            .position(30.0, 0.0)
+            .color(Color::AQUA)
+            .size(50.0);
         }
         _ => {}
     }

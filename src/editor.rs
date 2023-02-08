@@ -27,10 +27,7 @@ impl Editor {
     pub fn move_cursor(&mut self, key: KeyCode) {
         match key {
             KeyCode::Right => {
-                if self.cursor_pos.x
-                    < self.doc.as_mut().unwrap().lines[self.cursor_pos.y]
-                        .len()
-                {
+                if self.cursor_pos.x < self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len() {
                     self.cursor_pos.x += 1;
                 }
             }
@@ -42,16 +39,22 @@ impl Editor {
             KeyCode::Up => {
                 if self.cursor_pos.y > 0 {
                     self.cursor_pos.y -= 1;
-                    if self.cursor_pos.x > self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len() {
-                        self.cursor_pos.x = self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len().saturating_sub(1);
+                    if self.cursor_pos.x > self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len()
+                    {
+                        self.cursor_pos.x = self.doc.as_mut().unwrap().lines[self.cursor_pos.y]
+                            .len()
+                            .saturating_sub(1);
                     }
                 }
             }
             KeyCode::Down => {
                 if self.cursor_pos.y < self.doc.as_mut().unwrap().lines.len().saturating_sub(1) {
                     self.cursor_pos.y += 1;
-                    if self.cursor_pos.x > self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len() {
-                        self.cursor_pos.x = self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len().saturating_sub(1);
+                    if self.cursor_pos.x > self.doc.as_mut().unwrap().lines[self.cursor_pos.y].len()
+                    {
+                        self.cursor_pos.x = self.doc.as_mut().unwrap().lines[self.cursor_pos.y]
+                            .len()
+                            .saturating_sub(1);
                     }
                 }
             }
