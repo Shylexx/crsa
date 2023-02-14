@@ -246,6 +246,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "coolor"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ad6ac2088e244fd157068daf566f17f7b46d5c543273582bc8b2875233bdfb86"
+
+[[package]]
 name = "core-foundation"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -377,6 +383,7 @@ dependencies = [
 name = "crsa"
 version = "0.1.0"
 dependencies = [
+ "coolor",
  "notan",
 ]
 

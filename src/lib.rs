@@ -3,6 +3,7 @@ use crate::editor::{Editor, EditorState};
 use editor::Position;
 use notan::draw::*;
 use notan::prelude::*;
+use coolor::Hsl;
 
 mod document;
 mod editor;
@@ -44,6 +45,7 @@ fn setup(gfx: &mut Graphics) -> Editor {
         state: EditorState::Splash,
         cursor_pos: Position { x: 0, y: 0 },
         quit: false,
+        color_offset: 0.0,
     }
 }
 
@@ -58,6 +60,10 @@ fn frame(app: &mut App, editor: &mut Editor) {
             if editor.quit {
                 app.exit();
             }
+            if editor.color_offset >= 360.0 {
+                editor.color_offset = 0.0;
+            }
+            editor.color_offset += 50.0 * app.timer.delta_f32();
         }
         _ => {}
     }
@@ -103,6 +109,7 @@ fn draw(gfx: &mut Graphics, editor: &mut Editor) {
             );
 
             // Render Document content
+            /*
             draw.text(
                 &editor.font4,
                 &editor.doc.as_mut().expect("No document to draw!").as_str(),
@@ -110,6 +117,23 @@ fn draw(gfx: &mut Graphics, editor: &mut Editor) {
             .position(30.0, 0.0)
             .color(Color::AQUA)
             .size(50.0);
+            */
+
+            for (row, content) in editor.doc.as_mut().expect("No document to draw!").lines.iter().enumerate() {
+                let row_color = ((row as f32 + 2.0) * &editor.color_offset).clamp(1.0, 359.0);
+                let row_color = Hsl::new(row_color, 1.0, 0.5);
+                let (r, g, b) = row_color.to_rgb().parts();
+                let row_color = Color::from_rgb(r, g, b);
+                //eprintln!("Row color: {}", row_color);
+                draw.text(
+                    &editor.font4,
+                    &content.content,
+                    )
+                    .position(30.0, row as f32 * 50.0)
+                    .color(row_color)
+                    .size(50.0);
+
+            }
         }
         _ => {}
     }

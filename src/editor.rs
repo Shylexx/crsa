@@ -15,6 +15,7 @@ pub struct Editor {
     pub state: EditorState,
     pub cursor_pos: Position,
     pub quit: bool,
+    pub color_offset: f32,
 }
 
 pub enum EditorState {

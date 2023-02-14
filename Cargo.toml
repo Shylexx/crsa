@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 notan = { version = "0.9.1", features = ["text"] }
+coolor = "0.5.1"
