@@ -1,3 +1,5 @@
+use std::ops::Div;
+
 use crate::document::Document;
 use crate::editor::{Editor, EditorState};
 use editor::Position;
@@ -60,10 +62,10 @@ fn frame(app: &mut App, editor: &mut Editor) {
             if editor.quit {
                 app.exit();
             }
-            if editor.color_offset >= 360.0 {
+            if editor.color_offset >= 100.0 {
                 editor.color_offset = 0.0;
             }
-            editor.color_offset += 50.0 * app.timer.delta_f32();
+            editor.color_offset += 100.0 * app.timer.delta_f32();
         }
         _ => {}
     }
@@ -120,6 +122,25 @@ fn draw(gfx: &mut Graphics, editor: &mut Editor) {
             */
 
             for (row, content) in editor.doc.as_mut().expect("No document to draw!").lines.iter().enumerate() {
+                for (column, letter) in content.content.chars().enumerate() {
+                    let mut buf = [0; 4];
+                    let color = &editor.color_offset.div(100.0);
+                    let color = color * (row as f32 + 2.0);
+                    eprintln!("row color: {}", color);
+                    let letter_color = color + ((column as f32 + 2.0) * color); 
+                    eprintln!("letter color: {}", letter_color);
+                    let color = Hsl::new(letter_color, 1.0, 0.5);
+                    let (r, g, b) = color.to_rgb().parts();
+                    let color = Color::from_rgb(r, g, b);
+                    draw.text(
+                        &editor.font4,
+                        letter.encode_utf8(&mut buf)
+                        )
+                        .position((column as f32 * 25.0) + 30.0, row as f32 * 50.0)
+                        .size(50.0)
+                        .color(color);
+                }
+                /*
                 let row_color = ((row as f32 + 2.0) * &editor.color_offset).clamp(1.0, 359.0);
                 let row_color = Hsl::new(row_color, 1.0, 0.5);
                 let (r, g, b) = row_color.to_rgb().parts();
@@ -132,6 +153,7 @@ fn draw(gfx: &mut Graphics, editor: &mut Editor) {
                     .position(30.0, row as f32 * 50.0)
                     .color(row_color)
                     .size(50.0);
+                    */
 
             }
         }

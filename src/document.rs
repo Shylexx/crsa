@@ -109,7 +109,7 @@ impl Document {
             self.lines[at.y - 1].append(&append);
             return (new_cursor, KeyCode::Up);
         } else if self.lines[at.y].len() > 0 {
-            self.lines[at.y].delete(at.x - 1);
+            self.lines[at.y].delete(at.x.saturating_sub(1));
             return (0, KeyCode::Left);
         }
         (0, KeyCode::Escape)
